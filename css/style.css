@@ -1,0 +1,43 @@
+* {
+  box-sizing: border-box;
+}
+
+a {
+  cursor: pointer;
+}
+
+.login-ctn {
+  width: 500px;
+  margin: 100px auto;
+}
+
+.register-link {
+  display: inline-block;
+  margin-left: 50%;
+}
+
+.register-ctn {
+  width: 500px;
+  margin: 0 auto;
+  margin-top: 100px;
+}
+
+.login-link {
+  display: inline-block;
+  margin-left: 50%;
+}
+
+.add-category-ctn {
+  width: 500px;
+  margin: 100px auto;
+}
+
+.add-post-ctn {
+  width: 500px;
+  margin: 100px auto;
+}
+
+.home .row .card img {
+  height: 70%;
+  object-fit: cover;
+}
