@@ -28,7 +28,7 @@
                 <img src='images/{$row['postImage']}'>
                 <div class='card-body'>
                   <h2 class='card-title'>{$row['postTitle']}</h2>
-                  <a href='detailPost.php?id={$row['id']}' class='btn btn-primary'>Read More</a>
+                  <a href='detail_post.php?id={$row['id']}' class='btn btn-primary'>Read More</a>
                 </div>
               </div>
             ";
