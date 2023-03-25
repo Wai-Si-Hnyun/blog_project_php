@@ -17,7 +17,7 @@
     <h1 class="my-4">Admin Panel</h1>
     <section>
       <h2>Category</h2>
-      <a href="addCategory.php" class="btn btn-dark my-2">Add Category</a>
+      <a href="add_category.html" class="btn btn-dark my-2">Add Category</a>
       <table class="table">
         <thead>
           <tr>
@@ -49,7 +49,7 @@
                         <th scope='row'>{$row['id']}</th>
                         <td>{$row['categoryName']}</td>
                         <td>
-                          <a href='editCategory.php?id={$row['id']}&name={$row['categoryName']}'
+                          <a href='edit_category.php?id={$row['id']}&name={$row['categoryName']}'
                            class='text-primary'>Edit</a>
                         </td>
                         <td>
@@ -67,7 +67,7 @@
     </section>
     <section class="my-5">
       <h2>Post</h2>
-      <a href="addPost.php" class="btn btn-dark">Add Post</a>
+      <a href="add_post.php" class="btn btn-dark">Add Post</a>
       <table class="table">
         <thead>
           <tr>
@@ -103,7 +103,7 @@
                     <td>{$row['categoryId']}</td>
                     <td>{$row['postTitle']}</td>
                     <td>{$row['postDescription']}</td>
-                    <td><a href='editPost.php?id={$row['id']}' class='text-primary'>Edit</a></td>
+                    <td><a href='edit_post.php?id={$row['id']}' class='text-primary'>Edit</a></td>
                     <td><a href='delete.php?db=posts&id={$row['id']}' class='text-danger'>Delete</a></td>
                   </tr>
                 ";

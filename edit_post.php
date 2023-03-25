@@ -17,82 +17,7 @@ if (isset($_GET['id'])) {
     echo "Error: " . $e->getMessage();
   }
 }
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $error = [];
-  $categoryId = $_POST['categoryId'];
-  $postTitle = $_POST['postTitle'];
-  $postDescription = $_POST['postDescription'];
-
-  if (!empty($categoryId) && !empty($postTitle) && !empty($postDescription)) {
-
-    $id = $_POST['postId'];
-
-    if (!empty($_FILES['postImage']['name'])) {
-      $sql = "SELECT postImage FROM posts WHERE id = $id";
-      $result = mysqli_query($connection, $sql);
-      $row = mysqli_fetch_assoc($result);
-
-      //Delete old image
-      $oldImgName = $row['postImage'];
-      $oldImgPath = 'images/' . $oldImgName;
-
-      //Check old img exists or not
-      if (file_exists($oldImgPath)) {
-        unlink($oldImgPath);
-      } else {
-        echo "Image not found";
-      }
-
-      //Upload new image into directory
-      $target_dir = "images/";
-      $imgName = basename($_FILES['postImage']['name']);
-      $target_file = $target_dir . $imgName;
-      move_uploaded_file($_FILES["postImage"]["tmp_name"], $target_file);
-
-      $sql = "UPDATE posts 
-                SET postTitle = ?, postDescription = ?,
-                    categoryId = ?, postImage = ?
-                WHERE id = ?";
-
-      $stmt = $connection->prepare($sql);
-      $stmt->bind_param("ssisi", $postTitle, $postDescription, $categoryId, $imgName, $id);
-    } else {
-      $sql = "UPDATE posts 
-                SET postTitle = ?, postDescription = ?, categoryId = ?
-                WHERE id = ?";
-
-      $stmt = $connection->prepare($sql);
-      $stmt->bind_param("ssii", $postTitle, $postDescription, $categoryId, $id);
-    }
-
-    try {
-      $stmt->execute();
-
-      if ($stmt->error) {
-        throw new Exception($stmt->error);
-      }
-
-      header('location:admin.php');
-    } catch (Exception $e) {
-      echo 'Error: ' . $e->getMessage();
-    }
-  } else {
-    //Error handling
-    if (empty($categoryId)) {
-      $error['categoryId'] = "Required";
-    }
-
-    if (empty($postTitle)) {
-      $error['postTitle'] = "Required";
-    }
-
-    if (empty($postDescription)) {
-      $error['postDescription'] = "Required";
-    }
-  }
-}
-
+mysqli_close($connection);
 ?>
 
 <!DOCTYPE html>
@@ -112,11 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <div class="add-category-ctn">
     <a href="admin.php" class="btn btn-dark">Back</a>
     <h1>Add Category</h1>
-    <form method="POST" action="editPost.php" enctype="multipart/form-data">
+    <form method="POST" action="update_post.php.php" enctype="multipart/form-data">
       <div class="mb-3">
         <?php
         echo "<img src='images/{$postImage}' alt='Post Image'>"
-        ?>
+          ?>
       </div>
       <div class="mb-3">
         <label for="categoryId" class="form-label">Category</label>
@@ -128,20 +53,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           $rows = mysqli_num_rows($result);
 
           if ($rows == 0) {
-              echo "";
+            echo "";
           } else {
-              while ($row = mysqli_fetch_assoc($result)) {
-                echo "
+            while ($row = mysqli_fetch_assoc($result)) {
+              echo "
                   <option value='{$row['id']}'>{$row['categoryName']}</option>
                 ";
-              }
+            }
           }
-        mysqli_close($connection);
-        ?>
+          mysqli_close($connection);
+          ?>
         </select>
         <?php
         if (!empty($error['categoryId'])):
-            echo '<small class="text-danger">' . $error['categoryId'] . '</small>';
+          echo '<small class="text-danger">' . $error['categoryId'] . '</small>';
         endif ?>
       </div>
       <div class="mb-3">
@@ -152,9 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                  <input type='hidden' name='postId' value='{$id}' >";
 
         if (!empty($error['postTitle'])):
-            echo '<small class="text-danger">' . $error['postTitle'] . '</small>';
-        endif
-        ?>
+          echo '<small class="text-danger">' . $error['postTitle'] . '</small>';
+        endif ?>
       </div>
       <div class="mb-3">
         <label for="postDescription" class="form-label">Post Description</label>
@@ -167,9 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           ";
 
         if (!empty($error['postDescription'])):
-            echo '<small class="text-danger">' . $error['postDescription'] . '</small>';
-        endif
-        ?>
+          echo '<small class="text-danger">' . $error['postDescription'] . '</small>';
+        endif ?>
       </div>
       <div class="mb-3">
         <label for="postImage" class="form-label">Post Image</label>
