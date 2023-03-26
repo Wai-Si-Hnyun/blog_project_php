@@ -1,15 +1,15 @@
-<?php 
+<?php
 
-  // Database Connection
-  $servername = "localhost";
-  $username = "root";
-  $password = "Aeiou6453!";
-  $dbname = "blog";
+// Database Connection
+$servername = "localhost";
+$username = "root";
+$password = "admin123";
+$dbname = "blog";
 
-  $connection = mysqli_connect($servername, $username, $password, $dbname);
+$connection = mysqli_connect($servername, $username, $password, $dbname);
 
-  if (!$connection) {
-    die("Connection fail...". mysqli_connect_error()); 
-  }
+if (!$connection) {
+  die("Connection fail..." . mysqli_connect_error());
+}
 
 ?>
