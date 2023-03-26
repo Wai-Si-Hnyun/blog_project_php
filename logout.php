@@ -1,11 +1,8 @@
 <?php
 
-session_start();
-
-$_SESSION['user'] = "";
-
-header('location:login.php');
-
+require_once('db.php');
+$db = new DB();
+$db->logout();
 exit();
 
 ?>

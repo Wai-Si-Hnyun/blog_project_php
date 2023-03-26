@@ -1,98 +1,20 @@
 <?php
 
-require_once('dbconnection.php');
+require_once('db.php');
+$db = new DB();
+$error = $db->updatePost();
 
 if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-    $sql = "SELECT * FROM posts WHERE id = $id";
-    try {
-        $result = mysqli_query($connection, $sql);
-        $row = mysqli_fetch_assoc($result);
+    $post = $db->show($_GET['id']);
 
-        //Assign into variables
-        $postTitle = $row['postTitle'];
-        $postDescription = $row['postDescription'];
-        $postImage = $row['postImage'];
-    } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
-    }
+    //Assign values to variables
+    $id = $post['id'];
+    $categoryId = $post['categoryId'];
+    $postTitle = $post['postTitle'];
+    $postDescription = $post['postDescription'];
+    $postImage = $post['postImage'];
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $error = [];
-    $categoryId = $_POST['categoryId'];
-    $postTitle = $_POST['postTitle'];
-    $postDescription = $_POST['postDescription'];
-
-    if (!empty($categoryId) && !empty($postTitle) && !empty($postDescription)) {
-
-        $id = $_POST['postId'];
-
-        if (!empty($_FILES['postImage']['name'])) {
-            $sql = "SELECT postImage FROM posts WHERE id = $id";
-            $result = mysqli_query($connection, $sql);
-            $row = mysqli_fetch_assoc($result);
-
-            //Delete old image
-            $oldImgName = $row['postImage'];
-            $oldImgPath = 'images/' . $oldImgName;
-
-            //Check old img exists or not
-            if (file_exists($oldImgPath)) {
-                unlink($oldImgPath);
-            } else {
-                echo "Image not found";
-            }
-
-            //Upload new image into directory
-            $target_dir = "images/";
-            $imgName = basename($_FILES['postImage']['name']);
-            $target_file = $target_dir . $imgName;
-            move_uploaded_file($_FILES["postImage"]["tmp_name"], $target_file);
-
-            $sql = "UPDATE posts 
-                SET postTitle = ?, postDescription = ?,
-                    categoryId = ?, postImage = ?
-                WHERE id = ?";
-
-            $stmt = $connection->prepare($sql);
-            $stmt->bind_param("ssisi", $postTitle, $postDescription, $categoryId, $imgName, $id);
-        } else {
-            $sql = "UPDATE posts 
-                SET postTitle = ?, postDescription = ?, categoryId = ?
-                WHERE id = ?";
-
-            $stmt = $connection->prepare($sql);
-            $stmt->bind_param("ssii", $postTitle, $postDescription, $categoryId, $id);
-        }
-
-        try {
-            $stmt->execute();
-
-            if ($stmt->error) {
-                throw new Exception($stmt->error);
-            }
-
-            header('location:admin.php');
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
-    } else {
-        //Error handling
-        if (empty($categoryId)) {
-            $error['categoryId'] = "Required";
-        }
-
-        if (empty($postTitle)) {
-            $error['postTitle'] = "Required";
-        }
-
-        if (empty($postDescription)) {
-            $error['postDescription'] = "Required";
-        }
-    }
-}
-mysqli_close($connection);
 ?>
 
 <!DOCTYPE html>
@@ -109,10 +31,10 @@ mysqli_close($connection);
 </head>
 
 <body>
-    <div class="add-category-ctn">
-        <a href="admin.php" class="btn btn-dark">Back</a>
+    <div class="container col-8">
+        <a href="admin.php" class="btn btn-dark mt-3">Back</a>
         <h1>Add Category</h1>
-        <form method="POST" action="update_post.php.php" enctype="multipart/form-data">
+        <form method="POST" action="edit_post.php?id=<?php echo $id ?>" enctype="multipart/form-data">
             <div class="mb-3">
                 <?php
                 echo "<img src='images/{$postImage}' alt='Post Image'>"
@@ -123,20 +45,16 @@ mysqli_close($connection);
                 <select name="categoryId" id="categoryId" class="form-select">
                     <option value="">Choose category</option>
                     <?php
-                    $sql = "SELECT * FROM categories";
-                    $result = mysqli_query($connection, $sql);
-                    $rows = mysqli_num_rows($result);
+                    $categories = $db->index("categories");
 
-                    if ($rows == 0) {
-                        echo "";
-                    } else {
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            echo "
-                  <option value='{$row['id']}'>{$row['categoryName']}</option>
-                ";
-                        }
+                    foreach ($categories as $category) {
+                        $selected = ($category['id'] == $categoryId) ? 'selected' : '';
+                        echo "
+                            <option value='{$category['id']}' {$selected}>
+                                {$category['categoryName']}
+                            </option>
+                        ";
                     }
-                    mysqli_close($connection);
                     ?>
                 </select>
                 <?php
@@ -157,14 +75,10 @@ mysqli_close($connection);
             </div>
             <div class="mb-3">
                 <label for="postDescription" class="form-label">Post Description</label>
+                <textarea class='form-control' 
+                    name='postDescription' id='postDescription'
+                    cols="10" rows='10'><?php echo $postDescription ?></textarea>
                 <?php
-
-                echo "
-            <textarea class='form-control' name='postDescription' id='postDescription' rows='10'
-            >{$postDescription}
-            </textarea>
-          ";
-
                 if (!empty($error['postDescription'])):
                     echo '<small class="text-danger">' . $error['postDescription'] . '</small>';
                 endif ?>

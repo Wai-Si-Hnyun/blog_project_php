@@ -1,37 +1,9 @@
 <?php
 
-session_start();
+require_once('db.php');
+$db = new DB();
+$error = $db->register();
 
-require_once('dbconnection.php');
-
-$error = [];
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (!empty($_POST['username']) && !empty($_POST['password'])) {
-
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-
-        $hashPass = password_hash($password, PASSWORD_DEFAULT);
-
-        // Query database to add user
-        $sql = "INSERT INTO users (userName, password) VALUES ('$username', '$hashPass')";
-
-        try {
-            mysqli_query($connection, $sql);
-            $_SESSION['username'] = $username;
-            header('location:home.php');
-        } catch (\Throwable $th) {
-            echo "Cannot create user. Try another username";
-        }
-    } else {
-        $error['username'] = "Required";
-        $error['password'] = "Required";
-    }
-}
-
-
-mysqli_close($connection);
 
 ?>
 

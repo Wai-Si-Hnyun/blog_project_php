@@ -7,6 +7,9 @@ if ($_SESSION['username'] != 'admin') {
     die("Permission denied");
 }
 
+require_once('db.php');
+$db = new DB();
+
 ?>
 
 <!DOCTYPE html>
@@ -40,37 +43,33 @@ if ($_SESSION['username'] != 'admin') {
                 </thead>
                 <tbody class="table-group-divider">
                     <?php
-                    require_once('dbconnection.php');
+                    $categories = $db->index('categories');
 
-                    $sql = "SELECT * FROM categories";
-                    $result = mysqli_query($connection, $sql);
-                    $rows = mysqli_num_rows($result);
-
-                    if ($rows == 0) {
-                        echo "
-                  <tr>
-                    <th scope='row'></th>
-                      <td>No data</td>
-                    </tr>
-                  ";
-                    } else {
-                        while ($row = mysqli_fetch_assoc($result)) {
+                    if ($categories) {
+                        foreach ($categories as $category) {
                             echo "
-                    <tr>
-                        <th scope='row'>{$row['id']}</th>
-                        <td>{$row['categoryName']}</td>
-                        <td>
-                          <a href='edit_category.php?id={$row['id']}&name={$row['categoryName']}'
-                           class='text-primary'>Edit</a>
-                        </td>
-                        <td>
-                          <a href='delete.php?db=categories&id={$row['id']}' class='text-danger'>
-                            Delete
-                          </a>
-                        </td>
-                    </tr>
-                  ";
+                                <tr>
+                                    <th scope='row'>{$category['id']}</th>
+                                    <td>{$category['categoryName']}</td>
+                                    <td>
+                                    <a href='edit_category.php?id={$category['id']}&name={$category['categoryName']}'
+                                    class='text-primary'>Edit</a>
+                                    </td>
+                                    <td>
+                                    <a href='delete.php?db=categories&id={$category['id']}' class='text-danger'>
+                                        Delete
+                                    </a>
+                                    </td>
+                                </tr>
+                            ";
                         }
+                    } else {
+                        echo "
+                            <tr>
+                                <th scope='row'></th>
+                                <td>No data</td>
+                            </tr>
+                        ";
                     }
                     ?>
                 </tbody>
@@ -93,32 +92,37 @@ if ($_SESSION['username'] != 'admin') {
                 </thead>
                 <tbody class="table-group-divider">
                     <?php
+                    $posts = $db->index('posts');
 
-                    $sql = "SELECT * FROM posts";
-                    $result = mysqli_query($connection, $sql);
-                    $rows = mysqli_num_rows($result);
-
-                    if ($rows == 0) {
-                        echo "
-              <tr>
-                <th scope='row'></th>
-                <td>No data</td>
-              </tr>
-              ";
-                    } else {
-                        while ($row = mysqli_fetch_assoc($result)) {
+                    if ($posts) {
+                        foreach ($posts as $post) {
                             echo "
-                  <tr>
-                    <th scope='row'>{$row['id']}</th>
-                    <th class='col-4'><img class='w-25' src='images/{$row['postImage']}' alt='post_image'></th>
-                    <td>{$row['categoryId']}</td>
-                    <td>{$row['postTitle']}</td>
-                    <td>{$row['postDescription']}</td>
-                    <td><a href='edit_post.php?id={$row['id']}' class='text-primary'>Edit</a></td>
-                    <td><a href='delete.php?db=posts&id={$row['id']}' class='text-danger'>Delete</a></td>
-                  </tr>
-                ";
+                                <tr>
+                                    <th scope='row'>{$post['id']}</th>
+                                    <th class='col-4'>
+                                        <img class='w-25' src='images/{$post['postImage']}' alt='post_image'>
+                                    </th>
+                                    <td>{$post['categoryId']}</td>
+                                    <td>{$post['postTitle']}</td>
+                                    <td>{$post['postDescription']}</td>
+                                    <td>
+                                        <a href='edit_post.php?id={$post['id']}' class='text-primary'>Edit</a>
+                                    </td>
+                                    <td>
+                                        <a href='delete.php?db=posts&id={$post['id']}' class='text-danger'>
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            ";
                         }
+                    } else {
+                        echo "
+                            <tr>
+                                <th scope='row'></th>
+                                <td>No data</td>
+                            </tr>
+                        ";
                     }
                     ?>
                 </tbody>
@@ -137,31 +141,31 @@ if ($_SESSION['username'] != 'admin') {
                 </thead>
                 <tbody>
                     <?php
+                    $comments = $db->index('comments');
 
-                    $sql = "SELECT * FROM  comments";
-                    $result = mysqli_query($connection, $sql);
-                    $rows = mysqli_num_rows($result);
-
-                    if ($rows == 0) {
-                        echo "
-                <tr>
-                  <th scope='row'></th>
-                  <td>No data</td>
-                </tr>
-              ";
-                    } else {
-                        while ($row = mysqli_fetch_assoc($result)) {
+                    if ($comments) {
+                        foreach ($comments as $comment) {
                             echo "
-                  <tr>
-                    <th scope='row'>{$row['id']}</th>
-                    <td>{$row['postId']}</td>
-                    <td>{$row['cmtDescription']}</td>
-                    <td><a href='delete.php?db=comments&id={$row['id']}' class='text-danger'>Delete</a></td>
-                  </tr>
-                ";
+                                <tr>
+                                    <th scope='row'>{$comment['id']}</th>
+                                    <td>{$comment['postId']}</td>
+                                    <td>{$comment['cmtDescription']}</td>
+                                    <td>
+                                        <a href='delete.php?db=comments&id={$comment['id']}' class='text-danger'>
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            ";
                         }
+                    } else {
+                        echo "
+                            <tr>
+                                <th scope='row'></th>
+                                <td>No data</td>
+                            </tr>
+                        ";
                     }
-                    mysqli_close($connection);
                     ?>
                 </tbody>
             </table>

@@ -1,60 +1,8 @@
 <?php
 
-session_start();
-
-require_once('dbconnection.php');
-
-$error = [];
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (!empty($_POST['username']) && !empty($_POST['password'])) {
-
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-
-        // Query database to check user exit
-        $sql = "SELECT * FROM users WHERE userName = ?";
-
-        try {
-            $stmt = $connection->prepare($sql);
-            $stmt->bind_param("s", $username);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($stmt->error) {
-                throw new Exception($stmt->error);
-            } else if (mysqli_num_rows($result) == 0) {
-                throw new Exception("User not found");
-            }
-        } catch (Exception $e) {
-            echo "Error: " . $e->getMessage();
-        }
-
-        //If user is found, check the password
-        if (mysqli_num_rows($result) > 0) {
-            $row = mysqli_fetch_assoc($result);
-
-            if (password_verify($password, $row['password'])) {
-                //Store username  in session
-                $_SESSION['username'] = $username;
-
-                if ($row['role'] == 'admin') {
-                    header('location:admin.php');
-                } else {
-                    header('location:home.php');
-                }
-            } else {
-                // Error message for password is incorrect condition
-                $error['password'] = "Incorrect password";
-            }
-        }
-    } else {
-        $error['username'] = "Required";
-        $error['password'] = "Required";
-    }
-}
-
-mysqli_close($connection);
+require_once('db.php');
+$db = new DB();
+$error = $db->login();
 
 ?>
 
