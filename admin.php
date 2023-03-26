@@ -1,3 +1,14 @@
+<?php
+
+session_start();
+
+//Authorization process
+if ($_SESSION['username'] != 'admin') {
+    die("Permission denied");
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
