@@ -2,8 +2,17 @@
 
 class DB
 {
+    /**
+     * Global database connection variable
+     *
+     * @var mysqli $connection
+     */
     protected $connection;
 
+    /**
+     * Constructor of the class
+     * Doing database connection
+     */
     public function __construct()
     {
         try {
@@ -16,7 +25,11 @@ class DB
         }
     }
 
-    //Create default admin account
+    /**
+     * Create Default Admin Account
+     *
+     * @return void
+     */
     public function createDefaultAdmin()
     {
         //Check admin is created of not
