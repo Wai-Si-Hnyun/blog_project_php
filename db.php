@@ -188,6 +188,28 @@ class DB
     }
 
     /**
+     * Show comments fro specific post 
+     *
+     * @param integer $postId id of the post
+     * @return array $comments an array of the comments in the post
+     */
+    public function showCommentsForPost($postId)
+    {
+        $sql = "SELECT * FROM comments WHERE postId = ?";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bind_param("i", $postId);
+        $stmt->execute();
+
+        if ($stmt->error) {
+            die("Error: " . $stmt->error);
+        }
+
+        $result = $stmt->get_result();
+        $comments = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        return $comments;
+    }
+
+    /**
      * Store new category
      * @return string $error error message
      */
@@ -276,6 +298,33 @@ class DB
             }
         }
         return $errors;
+    }
+
+    /**
+     * Store comment
+     *
+     * @return void
+     */
+    public function storeComment()
+    {
+        if (!empty($_POST['comment'])) {
+
+            $cmtDescription = $_POST['comment'];
+            $postId = $_POST['postId'];
+
+            $sql = "INSERT INTO comments (postId, cmtDescription) 
+                      VALUES (?, ?)";
+
+            $stmt = $this->connection->prepare($sql);
+            $stmt->bind_param("is", $postId, $cmtDescription);
+            $stmt->execute();
+
+            if ($stmt->error) {
+                die("Error: " . $stmt->error);
+            }
+
+            header('location: detail_post.php?id=' . $postId);
+        }
     }
 
     /**
@@ -394,6 +443,27 @@ class DB
             }
         }
         return $error;
+    }
+
+    /**
+     * Delete specific data from database
+     *
+     * @param string $db table name in database
+     * @param integer $id id of the data wanted to delete
+     * @return void
+     */
+    public function destroy($db, $id)
+    {
+        $sql = "DELETE FROM `$db` WHERE id = ?";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        if ($stmt->error) {
+            die("Error: " . $stmt->error);
+        }
+
+        header('location:admin.php');
     }
 
 }

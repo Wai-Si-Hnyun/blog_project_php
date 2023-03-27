@@ -18,22 +18,27 @@
     <hr>
     <div class="row">
       <?php
-      require_once('dbconnection.php');
-      $sql = "SELECT * FROM posts";
-      $result = mysqli_query($connection, $sql);
+      require_once('db.php');
+      $db = new DB();
+      $posts = $db->index('posts');
 
-      while ($row = mysqli_fetch_assoc($result)) {
-        echo "
+      if ($posts) {
+        foreach($posts as $post) {
+          echo "
               <div class='card col-3 mb-3'>
-                <img src='images/{$row['postImage']}'>
+                <img src='images/{$post['postImage']}'>
                 <div class='card-body'>
-                  <h2 class='card-title'>{$row['postTitle']}</h2>
-                  <a href='detail_post.php?id={$row['id']}' class='btn btn-primary'>Read More</a>
+                  <h2 class='card-title'>{$post['postTitle']}</h2>
+                  <a href='detail_post.php?id={$post['id']}' class='btn btn-primary'>Read More</a>
                 </div>
               </div>
-            ";
+          ";
+        }
+      } else {
+        echo "
+            <p>There is no post</p>
+        ";
       }
-      mysqli_close($connection);
       ?>
     </div>
   </div>

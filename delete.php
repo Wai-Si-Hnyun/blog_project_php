@@ -1,29 +1,16 @@
 <?php
 
-require_once('dbconnection.php');
+require_once('db.php');
+$db = new DB();
 
 if (isset($_GET['db']) && isset($_GET['id'])) {
 
-    $db = $_GET['db'];
+    $dbname = $_GET['db'];
     $id = $_GET['id'];
-
-    $sql = "DELETE FROM $db WHERE id = ?";
-    try {
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-
-        if ($stmt->error) {
-            throw new Exception($stmt->error);
-        }
-
-        header('location:admin.php');
-    } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
-    }
+    $db->destroy($dbname, $id);
 
 } else {
-    echo "Parameters not found";
+    die('Error: ' . 'Parameters not found');
 }
 mysqli_close($connection);
 ?>

@@ -20,8 +20,8 @@ $errors = $db->storePost();
 </head>
 
 <body>
-    <div class="add-post-ctn">
-        <a href="admin.php" class="btn btn-dark">Back</a>
+    <div class="container col-7">
+        <a href="admin.php" class="btn btn-dark my-5">Back</a>
         <h1>Add Post</h1>
         <form method="POST" action="add_post.php" enctype="multipart/form-data">
             <div class="mb-3">
@@ -71,7 +71,7 @@ $errors = $db->storePost();
                     echo '<small class="text-danger">' . $errors['postImage'] . '</small>';
                 endif ?>
             </div>
-            <button type="submit" class="btn btn-primary">Add</button>
+            <button type="submit" class="btn btn-primary mb-4">Add</button>
         </form>
     </div>
 </body>

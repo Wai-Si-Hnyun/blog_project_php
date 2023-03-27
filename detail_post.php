@@ -1,45 +1,15 @@
 <?php
 
-require_once('dbconnection.php');
+require_once('db.php');
+$db = new DB();
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $sql = "SELECT * FROM posts WHERE id = $id";
-    try {
-        $result = mysqli_query($connection, $sql);
-        $row = mysqli_fetch_assoc($result);
-
-        //Assign into variables
-        $postTitle = $row['postTitle'];
-        $postDescription = $row['postDescription'];
-        $postImage = $row['postImage'];
-
-        if (!$result) {
-            echo "Error: " . mysqli_error($connection);
-        }
-    } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
-    }
+    $post = $db->show($id);
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (!empty($_POST['comment'])) {
-        $cmtDescription = $_POST['comment'];
-        $postId = $_POST['postId'];
-
-        $sql = "INSERT INTO comments (postId, cmtDescription) 
-              VALUES ('$postId', '$cmtDescription')";
-
-        try {
-            $result = mysqli_query($connection, $sql);
-            if (!$result) {
-                echo mysqli_error($connection);
-            }
-            header('location:detailPost.php?id=' . $postId);
-        } catch (Exception $e) {
-            echo "Error:" . $e->getMessage();
-        }
-    }
+    $db->storeComment();
 }
 
 ?>
@@ -64,36 +34,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="col-md-8">
                 <?php
                 echo "
-            <img src='images/{$postImage}' class='img-fluid' alt='Blog Post Image'>
-            <h1 class='mt-3'>{$postTitle}</h1>
-            <p class='lead'>{$postDescription}</p>
+            <img src='images/{$post['postImage']}' class='img-fluid' alt='Blog Post Image'>
+            <h1 class='mt-3'>{$post['postTitle']}</h1>
+            <p class='lead'>{$post['postDescription']}</p>
             "
                     ?>
                 <hr>
                 <h3 class="mt-4">Comments</h3>
                 <ul class="list-unstyled">
                     <?php
-                    //Functional Style
-                    $sql = "SELECT * FROM comments WHERE postId = ?";
-                    $stmt = mysqli_prepare($connection, $sql);
-                    mysqli_stmt_bind_param($stmt, "i", $id);
-                    mysqli_stmt_execute($stmt);
-                    $result = mysqli_stmt_get_result($stmt);
+                    
+                    $comments = $db->showCommentsForPost($id);
 
-                    while ($row = mysqli_fetch_assoc($result)) {
+                    if ($comments) {
+                        foreach($comments as $comment) {
+                            echo "
+                                <li class='media my-4'>
+                                    <div class='media-body'>
+                                        <p> - {$comment['cmtDescription']}</p>
+                                    </div>
+                                </li>
+                            ";
+                        }
+                    } else {
                         echo "
-                    <li class='media my-4'>
-                    <div class='media-body'>
-                        <p> - {$row['cmtDescription']}</p>
-                    </div>
-                    </li>
-                ";
+                            <li class='media my-4'>
+                                <div class='media-body'>
+                                    <p class='text-danger'>No comment</p>
+                                </div>
+                            </li>
+                        ";
                     }
-                    mysqli_close($connection);
                     ?>
                 </ul>
                 <h3 class="mt-4">Leave a Comment</h3>
-                <form method="POST" action="detailPost.php">
+                <form method="POST" action="detail_post.php">
                     <div class="mb-3">
                         <textarea class="form-control" name="comment" id="comment" rows="3"
                             placeholder="Comment Here..."></textarea>

@@ -27,11 +27,6 @@ a {
   margin-left: 50%;
 }
 
-.add-post-ctn {
-  width: 500px;
-  margin: 100px auto;
-}
-
 .home .row .card img {
   height: 70%;
   object-fit: cover;

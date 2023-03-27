@@ -20,8 +20,8 @@ $error = $db->storeCategory();
 </head>
 
 <body>
-    <div class="add-category-ctn">
-        <a href="admin.php" class="btn btn-dark">Back</a>
+    <div class="container col-5">
+        <a href="admin.php" class="btn btn-dark mt-4">Back</a>
         <h1>Add Category</h1>
         <form method="POST" action="add_category.php">
             <div class="mb-3">
