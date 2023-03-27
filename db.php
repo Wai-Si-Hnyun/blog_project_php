@@ -16,7 +16,7 @@ class DB
     public function __construct()
     {
         try {
-            $this->connection = mysqli_connect("localhost", "root", "Aeiou6453!", "blog");
+            $this->connection = mysqli_connect("localhost", "root", "root", "blog");
             if (!$this->connection) {
                 throw new Exception("Connection fail..." . mysqli_connect_error());
             }
